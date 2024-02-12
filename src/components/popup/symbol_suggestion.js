@@ -1,6 +1,6 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {api} from "../../api";
-import _ from "lodash";
+import _, {upperCase} from "lodash";
 
 const debounceTime = 300
 
@@ -11,7 +11,8 @@ const getSuggestions = async (keyword) => {
     })).data;
 }
 
-const SymbolSuggestion = ({symbol, setInstrumentToken}) => {
+const SymbolSuggestion = ({setInstrumentData, setSearchSymbol, searchSymbol}) => {
+    const inputRef = useRef(null);
     const [suggestions, setSuggestions] = useState([{}]);
 
     const getSuggestionsDebounced = _.debounce(async (keyword) => {
@@ -21,15 +22,19 @@ const SymbolSuggestion = ({symbol, setInstrumentToken}) => {
     }, debounceTime);
 
     useEffect(() => {
-        getSuggestionsDebounced(symbol)
+        getSuggestionsDebounced(searchSymbol)
         return () => getSuggestionsDebounced.cancel();
-    }, [symbol])
+    }, [searchSymbol])
+
+    useEffect(() => {
+        inputRef.current.focus();
+    }, [])
 
     const SuggestionsUI = () => {
         if (suggestions === undefined || suggestions.length === 0) return <div>Loading...</div>
         const uiElems = suggestions.map((suggestion) => {
             return <div onClick={(e) => {
-                setInstrumentToken(suggestion['exchange_token'])
+                setInstrumentData(suggestion)
             }} style={{
                 display: "flex",
                 flexDirection: "row",
@@ -77,8 +82,11 @@ const SymbolSuggestion = ({symbol, setInstrumentToken}) => {
             borderColor: 'black',
             borderStyle: 'solid',
         }}>
-            <h3>Symbol: {symbol}</h3>
-            <SuggestionsUI />
+            <div style={{display: 'flex', height: "50px", flexDirection: 'row', alignItems: 'center', justifyContent: 'start'}}>
+                <h3>Symbol:</h3>
+                <input ref={inputRef} onChange={(e) => setSearchSymbol(e.target.value)} type="text" value={searchSymbol.toUpperCase()}/>
+            </div>
+            <SuggestionsUI/>
         </div>
     )
 }

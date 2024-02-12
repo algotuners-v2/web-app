@@ -8,34 +8,11 @@ const Chart = ({data}) => {
         if (data == null) {
             return;
         }
-        let destroyChartCallback = generateChart(data)
-        return () => {
-            if (destroyChartCallback) {
-                destroyChartCallback();
-            }
-        };
+        generateChart(data)
     }, [data])
 
     const generateChart = (data) => {
-        const chart = createChart(chartContainerRef.current, {
-            layout: {
-                background: {type: ColorType.Solid, color: 'white'},
-                textColor: 'black'
-            },
-            height: '900',
-            width: '1500',
-            grid: {
-                horzLines: {
-                    visible: false,
-                },
-                vertLines: {
-                    visible: false,
-                }
-            }
-        });
-        const handleResize = () => {
-            chart.applyOptions({width: chartContainerRef.current.clientWidth});
-        };
+        const chart = createChart(chartContainerRef.current);
         const candlestickSeries = chart.addCandlestickSeries({
             upColor: '#26a69a',
             downColor: '#ef5350',
@@ -54,21 +31,18 @@ const Chart = ({data}) => {
             }
         })
         candlestickSeries.setData(filteredData);
-        chart.timeScale().fitContent();
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            chart.remove();
-        }
+        window.addEventListener('resize', () => {
+            chart.resize(window.innerWidth, window.innerHeight);
+        });
     }
 
     if (data == null) {
         return <div>Waiting for input...</div>
     }
     if (data.length === 0) {
-        return <div ref={chartContainerRef} style={{width: '100%', height: '100%'}}>No data</div>
+        return <div ref={chartContainerRef}>No data</div>
     }
-    return <div ref={chartContainerRef} style={{width: '100%', height: '100%'}} />
+    return <div ref={chartContainerRef} style={{width: '100%', height: '100%'}}/>
 }
 
 export default Chart;
