@@ -14,8 +14,8 @@ export const historicalData = async (token, interval, days) => {
 
     return (await api.get('/historical-data', {
         params: {
-            token,
-            interval,
+            exchange_token: token,
+            interval_in_seconds: interval,
             start_time: startTimeStr,
             end_time: endTimeStr,
         }

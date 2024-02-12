@@ -46,7 +46,7 @@ const ChartScreen = () => {
     }, [instrumentToken]);
 
     const loadInstrumentData = async () => {
-        const response = await historicalData(instrumentToken, 'one_minute', 5)
+        const response = await historicalData(instrumentToken, 300, 5)
         const data = response.data
         console.log("data loaded", instrumentToken, data)
         setInstrumentData(data)
