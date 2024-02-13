@@ -127,7 +127,8 @@ const ChartScreen = () => {
                     flexDirection: "column",
                     height: "100%",
                     width: "20%",
-                    alignItems: "center"
+                    marginLeft: "20px",
+                    alignItems: "start"
                 }}>
                     <h2>Configuration</h2>
                     {instrumentData != null && config !== undefined &&
@@ -136,37 +137,54 @@ const ChartScreen = () => {
                                 <p style={{fontSize: "20px", color: "black"}}>{instrumentData['trading_symbol']}</p>
                                 < div style={{
                                     display: "flex",
-                                    flexDirection: "row",
+                                    flexDirection: "column",
                                     alignItems: "center",
                                     justifyContent: "center"
                                 }}>
-                                    <p style={{fontSize: "20px", color: "black"}}>Interval: </p>
-                                    <input style={{
+                                    <div style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "center"
+                                    }}>
+                                        <p style={{fontSize: "20px", color: "black", fontStyle: "italic"}}>Interval (sec): </p>
+                                        <input style={{
+                                            width: "100px",
+                                            fontSize: "20px",
+                                            color: "black",
+                                            marginLeft: "10px",
+                                            border: "1px solid black",
+                                            padding: "5px",
+                                            borderRadius: "5px"
+                                        }}
+                                               type="text" pattern="[0-9]*"
+                                               onChange={
+                                                   (e) => {
+                                                       if (e.target.value === "") {
+                                                           setIntervalInSecondsInput(0)
+                                                           return
+                                                       }
+                                                       setIntervalInSecondsInput(parseInt(e.target.value))
+                                                   }}
+                                               value={intervalInSecondsInput}/>
+                                    </div>
+                                    <div style={{
                                         fontSize: "20px",
                                         color: "black",
-                                        marginLeft: "10px",
                                         border: "1px solid black",
-                                        padding: "5px",
-                                        borderRadius: "5px"
-                                    }}
-                                           placeholder="in seconds"
-                                           type="text" pattern="[0-9]*"
-                                           onChange={
-                                               (e) => {
-                                                   if (e.target.value === "") {
-                                                       setIntervalInSecondsInput(0)
-                                                       return
-                                                   }
-                                                   setIntervalInSecondsInput(parseInt(e.target.value))
-                                               }}
-                                           value={intervalInSecondsInput}/>
-                                    <div onClick={
+                                        padding: "10px",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                        marginTop: "10px",
+                                        fontWeight: "bold"
+                                    }} onClick={
                                         (e) => {
                                             setConfig((prevState) => ({
                                                 ...prevState,
                                                 interval_in_seconds: intervalInSecondsInput
                                             }))
-                                        }}>Load chart</div>
+                                        }}>Load chart
+                                    </div>
                                 </div>
                             </div>
                         )
