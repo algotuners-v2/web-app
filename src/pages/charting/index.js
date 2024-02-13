@@ -133,42 +133,58 @@ const ChartScreen = () => {
                     <h2>Configuration</h2>
                     {instrumentData != null && config !== undefined &&
                         (
-                            <div>
+                            <div style={{width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "start"}}>
                                 <p style={{fontSize: "20px", color: "black"}}>{instrumentData['trading_symbol']}</p>
                                 < div style={{
                                     display: "flex",
+                                    flex: 1,
                                     flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center"
+                                    alignItems: "start",
+                                    justifyContent: "space-between",
+                                    paddingBottom: "20px"
                                 }}>
                                     <div style={{
                                         display: "flex",
+                                        flex: 1,
                                         flexDirection: "row",
-                                        alignItems: "center",
+                                        alignItems: "flex-start",
                                         justifyContent: "center"
                                     }}>
-                                        <p style={{fontSize: "20px", color: "black", fontStyle: "italic"}}>Interval (sec): </p>
-                                        <input style={{
-                                            width: "100px",
-                                            fontSize: "20px",
-                                            color: "black",
-                                            marginLeft: "10px",
-                                            border: "1px solid black",
-                                            padding: "5px",
-                                            borderRadius: "5px"
-                                        }}
-                                               type="text" pattern="[0-9]*"
-                                               onChange={
-                                                   (e) => {
-                                                       if (e.target.value === "") {
-                                                           setIntervalInSecondsInput(0)
-                                                           return
-                                                       }
-                                                       setIntervalInSecondsInput(parseInt(e.target.value))
-                                                   }}
-                                               value={intervalInSecondsInput}/>
+                                        <div style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            justifyContent: "center"
+                                        }}>
+                                            <p style={{fontSize: "20px", color: "black", fontStyle: "italic"}}>Interval
+                                                (sec): </p>
+                                            <input style={{
+                                                width: "100px",
+                                                fontSize: "20px",
+                                                color: "black",
+                                                marginLeft: "10px",
+                                                border: "1px solid black",
+                                                padding: "5px",
+                                                borderRadius: "5px"
+                                            }}
+                                                   type="text" pattern="[0-9]*"
+                                                   onChange={
+                                                       (e) => {
+                                                           if (e.target.value === "") {
+                                                               setIntervalInSecondsInput(0)
+                                                               return
+                                                           }
+                                                           setIntervalInSecondsInput(parseInt(e.target.value))
+                                                       }}
+                                                   value={intervalInSecondsInput}/>
+                                        </div>
+
                                     </div>
                                     <div style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                         fontSize: "20px",
                                         color: "black",
                                         border: "1px solid black",
