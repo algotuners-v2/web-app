@@ -2,13 +2,18 @@ import Chart from "../../components/chart";
 import {useEffect, useState} from "react";
 import SymbolSuggestion from "../../components/popup/symbol_suggestion";
 import {historicalData} from "./api";
+import {parseInt} from "lodash";
 
 const ChartScreen = () => {
     const [instrumentData, setInstrumentData] = useState(null)
-    const [candlesData, setCandlesData] = useState(null)
     const [searchSymbol, setSearchSymbol] = useState("")
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [keyPressedAt, setKeyPressedAt] = useState(["", 0])
+    const [intervalInSecondsInput, setIntervalInSecondsInput] = useState(300)
+    const [config, setConfig] = useState({
+        "interval_in_seconds": 300,
+        "exchange_token": ""
+    })
 
     const _handleKeyDown = async (event) => {
         const keyPressed = event.key
@@ -24,10 +29,6 @@ const ChartScreen = () => {
         if (keyPressed === "Escape") {
             setSearchSymbol("")
             setShowSuggestions(false)
-        }
-        if (keyPressed === "Enter") {
-            if (instrumentData == null) return
-            loadInstrumentData()
         }
         if (searchSymbol.length > 0) return
         if (keyPressed === "a" || keyPressed === "A" || keyPressed === "b" || keyPressed === "B"
@@ -51,19 +52,23 @@ const ChartScreen = () => {
 
     useEffect(() => {
         if (instrumentData == null) return
-        loadInstrumentData()
-    }, [instrumentData]);
-
-    const loadInstrumentData = async () => {
-        const response = await historicalData(instrumentData['exchange_token'], 300, 5)
-        const data = response.data
-        setCandlesData(data)
+        setConfig({
+            interval_in_seconds: 300,
+            exchange_token: instrumentData['exchange_token'],
+        })
         setSearchSymbol("")
         setShowSuggestions(false)
-    }
+    }, [instrumentData]);
 
     return (
-        <div style={{display: 'flex', height: '100vh', width: '100%', flexDirection: 'column', alignItems: 'center', justifyContent: 'start'}}>
+        <div style={{
+            display: 'flex',
+            height: '100vh',
+            width: '100%',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'start'
+        }}>
             {showSuggestions && <div style={{
                 display: 'flex',
                 position: 'absolute',
@@ -77,18 +82,95 @@ const ChartScreen = () => {
                 justifyContent: 'center',
                 backgroundColor: 'rgba(0,0,0,0.5)'
             }}>
-                <SymbolSuggestion setInstrumentData={setInstrumentData} searchSymbol={searchSymbol} setSearchSymbol={setSearchSymbol}/>
+                <SymbolSuggestion setInstrumentData={setInstrumentData} searchSymbol={searchSymbol}
+                                  setSearchSymbol={setSearchSymbol}/>
             </div>}
-            <div style={{marginTop: '20px', width: '100%', flex: 0.1, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                <div onClick={() => setShowSuggestions(true)} style={{fontSize: '20px', fontWeight: 'bold', color: 'black', border: '1px solid black', padding: '10px', borderRadius: '5px', cursor: 'pointer'}}>Search Symbol</div>
-            </div>
-            <div style={{display: "flex", flexDirection: "row", flex: 1, width: "100%", alignItems: "center", justifyContent: "space-between"}}>
-                <div style={{display: "flex", height: "100%", width: "80%", alignItems: "center", justifyContent: "center"}}>
-                    <Chart data={candlesData}/>
+            <div style={{
+                marginTop: '20px',
+                width: '100%',
+                flex: 0.1,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <div onClick={() => setShowSuggestions(true)} style={{
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    color: 'black',
+                    border: '1px solid black',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                }}>Search Symbol
                 </div>
-                <div style={{display: "flex", flexDirection: "column", height: "100%", width: "20%", alignItems: "center"}}>
+            </div>
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                flex: 1,
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "space-between"
+            }}>
+                <div style={{
+                    display: "flex",
+                    height: "100%",
+                    width: "80%",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                    <Chart config={config} setConfig={setConfig}/>
+                </div>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                    width: "20%",
+                    alignItems: "center"
+                }}>
                     <h2>Configuration</h2>
-                    {instrumentData!=null && <p style={{fontSize: "20px", color: "black"}}>{instrumentData['trading_symbol']}</p>}
+                    {instrumentData != null && config !== undefined &&
+                        (
+                            <div>
+                                <p style={{fontSize: "20px", color: "black"}}>{instrumentData['trading_symbol']}</p>
+                                < div style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}>
+                                    <p style={{fontSize: "20px", color: "black"}}>Interval: </p>
+                                    <input style={{
+                                        fontSize: "20px",
+                                        color: "black",
+                                        marginLeft: "10px",
+                                        border: "1px solid black",
+                                        padding: "5px",
+                                        borderRadius: "5px"
+                                    }}
+                                           placeholder="in seconds"
+                                           type="text" pattern="[0-9]*"
+                                           onChange={
+                                               (e) => {
+                                                   if (e.target.value === "") {
+                                                       setIntervalInSecondsInput(0)
+                                                       return
+                                                   }
+                                                   setIntervalInSecondsInput(parseInt(e.target.value))
+                                               }}
+                                           value={intervalInSecondsInput}/>
+                                    <div onClick={
+                                        (e) => {
+                                            setConfig((prevState) => ({
+                                                ...prevState,
+                                                interval_in_seconds: intervalInSecondsInput
+                                            }))
+                                        }}>Load chart</div>
+                                </div>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         </div>
