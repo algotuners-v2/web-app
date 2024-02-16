@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { createChart } from "lightweight-charts";
-import { historicalData } from "../pages/charting/api";
+import {useEffect, useRef, useState} from "react";
+import {createChart} from "lightweight-charts";
+import {historicalData} from "../pages/charting/api";
+import {useTheme} from "@mui/material/styles";
+import {CircularProgress, Typography} from "@mui/material";
+import Box from "@mui/material/Box";
 
 const convertToEpochTime = (timestamp) => {
     const offset = 5.5 * 60 * 60 * 1000;
@@ -9,26 +12,69 @@ const convertToEpochTime = (timestamp) => {
     return istTime / 1000;
 }
 
-const Chart = ({ config }) => {
+const Chart = ({config, isLoading, setIsLoading}) => {
     const chartContainerRef = useRef(null);
     const chartRef = useRef(null);
     const seriesRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState([]);
     const [earliestTime, setEarliestTime] = useState(null);
+    const theme = useTheme();
+
+    const calcNumberOfDaysRequiredToLoadChartData = () => {
+        const intervalInSeconds = config.interval_in_seconds;
+        const totalSeconds = intervalInSeconds * 2000;
+        const secondsInADay = 6 * 60 * 60;
+        return totalSeconds / secondsInADay;
+    }
 
     useEffect(() => {
         if (!chartContainerRef.current) return;
         if (!chartRef.current) {
-            chartRef.current = createChart(chartContainerRef.current, {
+            const chart = createChart(chartContainerRef.current, {
+                crosshair: {
+                    mode: 0,
+                },
+                layout: {
+                    background: {
+                        color: theme.palette.primary.dark,
+                        textColor: '#fff',
+                    }
+                },
+                grid: {
+                    vertLines: {
+                        color: '#444',
+                    },
+                    horzLines: {
+                        color: '#444',
+                    }
+                },
                 width: chartContainerRef.current.offsetWidth,
                 height: chartContainerRef.current.offsetHeight,
                 timeScale: {
                     timeVisible: true,
                     secondsVisible: true,
-                }
+                    borderColor: '#404040',
+                    textColor: 'white',
+                },
             });
-            seriesRef.current = chartRef.current.addCandlestickSeries();
+            chart.timeScale().fitContent();
+            chart.priceScale('right').applyOptions({
+                    borderVisible: true,
+                    borderColor: '#404040',
+                    entireTextOnly: true,
+                    textColor: 'white',
+            })
+            chartRef.current = chart
+            seriesRef.current = chartRef.current.addCandlestickSeries({
+                color: '#2962FF',
+            });
+            seriesRef.current.applyOptions({
+                wickUpColor: 'rgb(54, 116, 217)',
+                upColor: 'rgb(54, 116, 217)',
+                wickDownColor: 'rgb(225, 50, 85)',
+                downColor: 'rgb(225, 50, 85)',
+                borderVisible: false,
+            });
             window.addEventListener('resize', resizeListener);
         }
 
@@ -36,7 +82,8 @@ const Chart = ({ config }) => {
             if (!config || !config.exchange_token || !config.interval_in_seconds) return;
             setIsLoading(true);
             const endTime = new Date();
-            const response = await historicalData(config.exchange_token, config.interval_in_seconds, 8, endTime);
+            endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
+            const response = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
             setIsLoading(false);
             setData(response.data);
             if (response.data.length > 0) {
@@ -108,7 +155,9 @@ const Chart = ({ config }) => {
         const needMoreData = range.from <= earliestTime;
         if (needMoreData && !isLoading) {
             setIsLoading(true);
-            const moreData = await historicalData(config.exchange_token, config.interval_in_seconds, 8, new Date(earliestTime * 1000));
+            const endTime = new Date(earliestTime * 1000);
+            endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
+            const moreData = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
             setIsLoading(false);
             const newData = [...moreData.data, ...data];
             setData(newData);
@@ -120,9 +169,14 @@ const Chart = ({ config }) => {
     }
 
     return (
-        <div ref={chartContainerRef} style={{ height: "100%", position: "relative", border: "1px solid grey", backgroundColor: "white", display: "flex", flexDirection: "row", flex: 1, alignItems: "center", justifyContent: "center" }}> {/* Ensure some default height is set */}
-            {isLoading ? "Loading..." : data == null || !data.length ? "No data" : null}
-        </div>
+        <div ref={chartContainerRef} style={{
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center"
+        }} />
     );
 };
 

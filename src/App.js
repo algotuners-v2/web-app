@@ -1,10 +1,61 @@
-import ChartScreen from "./pages/charting/index"
-function App() {
-  return (
-    <div className="App" style={{height: "100vh", width: "100vw", overflow: "hidden", overflowX: "hidden", overflowY: "hidden"}}>
-      <ChartScreen />
-    </div>
-  );
-}
+import ChartScreen from "./pages/charting"
 
-export default App;
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import AppDrawer from "./components/drawer/app_drawer";
+import {useEffect, useState} from "react";
+import Box from "@mui/material/Box";
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: {
+            light: '#606470',
+            main: '#606470',
+            dark: '#26282B',
+            contrastText: '#F5F5F5',
+        },
+        secondary: {
+            light: '#A0E9FF',
+            main: '#4586FF',
+            dark: '#6A7EFC',
+            contrastText: '#F5F5F5',
+        },
+    },
+});
+
+export default function App() {
+    const [isLoading, setIsLoading] = useState(true)
+    const [selectedPageIdx, setSelectedPageIdx] = useState(0)
+
+    useEffect(() => {
+        setIsLoading(false)
+    }, [])
+
+    return (
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <div className="App"
+                 style={{
+                     height: "100vh",
+                     width: "100vw",
+                     display: 'flex',
+                     flexDirection: 'row'
+                 }}>
+                <Box sx={{
+                    width: 64,
+                    height: '100%',
+                    flexShrink: 0
+                }}>
+                    <AppDrawer setSelectedPageIdx={setSelectedPageIdx} selectedPageIdx={selectedPageIdx}/>
+                </Box>
+                <Box sx={{
+                    flexGrow: 1,
+                    height: '100%'
+                }}>
+                    {selectedPageIdx === 0 && <ChartScreen/>}
+                </Box>
+            </div>
+        </ThemeProvider>
+    );
+}
