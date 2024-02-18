@@ -107,8 +107,8 @@ const Chart = ({config, isLoading, setIsLoading}) => {
                 layout: {
                     background: {
                         color: theme.palette.primary.dark,
-                        textColor: '#fff',
-                    }
+                    },
+                    textColor: '#fff',
                 },
                 grid: {
                     vertLines: {
@@ -123,22 +123,19 @@ const Chart = ({config, isLoading, setIsLoading}) => {
                 timeScale: {
                     timeVisible: true,
                     secondsVisible: true,
-                    borderColor: '#404040',
-                    textColor: 'white',
+                    borderColor: '#fff',
+                    textColor: '#fff',
+                    allowBoldLabels: true,
                 },
             });
             chart.timeScale().fitContent();
             chart.priceScale('right').applyOptions({
                     borderVisible: true,
-                    borderColor: '#404040',
+                    borderColor: '#fff',
                     entireTextOnly: true,
-                    textColor: 'white',
+                    textColor: '#fff',
             })
             chartRef.current = chart
-            const priceLineSeries = chartRef.current.addLineSeries({
-                color: 'blue',
-                lineWidth: 2,
-            });
             seriesRef.current = chartRef.current.addCandlestickSeries({
                 color: '#2962FF',
             })
