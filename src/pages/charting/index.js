@@ -19,6 +19,7 @@ const ChartScreen = () => {
         "exchange_token": "",
         "name": "",
         "trading_symbol": "",
+        "show_support_resistance_levels": false,
     })
 
     useEffect(() => {

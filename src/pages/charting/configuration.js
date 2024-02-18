@@ -1,23 +1,15 @@
 import {Fragment, useEffect, useState} from "react";
-import {isAllCaseLetter} from "./utils";
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import GppBadIcon from '@mui/icons-material/GppBad';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import {Alert} from "theme-ui";
-import {Paper, Stack, TextField, Typography} from "@mui/material";
+import {FormControlLabel, TextField, Typography} from "@mui/material";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import {IOSSwitch} from "./utils";
 
 const Configuration = ({openSettingDrawer, setOpenSettingDrawer, instrumentData, setConfig, config}) => {
-    const [intervalInSecondsInput, setIntervalInSecondsInput] = useState(300)
+    const [intervalInSecondsInput, setIntervalInSecondsInput] = useState(config.interval_in_seconds)
+    const [showSupportResistanceLevels, setShowSupportResistanceLevels] = useState(config.show_support_resistance_levels)
     const anchor = 'right';
 
     const toggleDrawer = () => (event) => {
@@ -86,11 +78,21 @@ const Configuration = ({openSettingDrawer, setOpenSettingDrawer, instrumentData,
                         }}
                         style={{ width: '100px' }}
                     />
+                    <FormControlLabel
+                        onClick={() => {
+                            setShowSupportResistanceLevels(prevState => !prevState)
+                        }}
+                        checked={showSupportResistanceLevels}
+                        style={{ marginLeft: '10px' }}
+                        control={<IOSSwitch sx={{ m: 1 }} />}
+                        label="Show S/R levels"
+                    />
                 </div>
                 <Button variant="contained" color="primary" fullWidth onClick={() => {
                     setConfig((prevState) => ({
                         ...prevState,
-                        interval_in_seconds: intervalInSecondsInput
+                        interval_in_seconds: intervalInSecondsInput,
+                        show_support_resistance_levels: showSupportResistanceLevels,
                     }));
                     setOpenSettingDrawer(false);
                 }}>

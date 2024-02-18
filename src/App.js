@@ -25,12 +25,7 @@ const darkTheme = createTheme({
 });
 
 export default function App() {
-    const [isLoading, setIsLoading] = useState(true)
     const [selectedPageIdx, setSelectedPageIdx] = useState(0)
-
-    useEffect(() => {
-        setIsLoading(false)
-    }, [])
 
     return (
         <ThemeProvider theme={darkTheme}>

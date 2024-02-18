@@ -25,3 +25,14 @@ export const historicalData = async (token, intervalInSeconds, days, endTime) =>
         }
     })).data;
 };
+
+export const getSupportResistanceData = async (candles) => {
+    const config = {
+        url: '/important-levels',
+        method: 'POST',
+        data: {
+            "candles_data": candles
+        }
+    };
+    return (await api.request(config)).data;
+};

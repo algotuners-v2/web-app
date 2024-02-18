@@ -1,9 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {createChart} from "lightweight-charts";
-import {historicalData} from "../pages/charting/api";
+import {getSupportResistanceData, historicalData, supportResistanceData} from "../pages/charting/api";
 import {useTheme} from "@mui/material/styles";
-import {CircularProgress, Typography} from "@mui/material";
-import Box from "@mui/material/Box";
 
 const convertToEpochTime = (timestamp) => {
     const offset = 5.5 * 60 * 60 * 1000;
@@ -17,14 +15,86 @@ const Chart = ({config, isLoading, setIsLoading}) => {
     const chartRef = useRef(null);
     const seriesRef = useRef(null);
     const [data, setData] = useState([]);
+    const [supportResistanceData, setSupportResistanceData] = useState([]);
     const [earliestTime, setEarliestTime] = useState(null);
     const theme = useTheme();
+    const [lastConfig, setLastConfig] = useState(null);
 
     const calcNumberOfDaysRequiredToLoadChartData = () => {
         const intervalInSeconds = config.interval_in_seconds;
         const totalSeconds = intervalInSeconds * 2000;
         const secondsInADay = 6 * 60 * 60;
         return totalSeconds / secondsInADay;
+    }
+
+    async function loadSupportResistanceData(candles) {
+        if (!candles || !candles.length) return;
+        setIsLoading(true);
+        try {
+            const response = await getSupportResistanceData(candles);
+            setIsLoading(false);
+            setSupportResistanceData(response.data);
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    async function loadData() {
+        if (!config || !config.exchange_token || !config.interval_in_seconds) return;
+        setIsLoading(true);
+        const endTime = new Date();
+        endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
+        const response = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
+        setIsLoading(false);
+        setData(response.data);
+        if (config.show_support_resistance_levels) {
+            await loadSupportResistanceData(response.data)
+        }
+        if (response.data.length > 0) {
+            const earliest = response.data.reduce((min, p) => p.time < min ? p.time : min, response.data[0].time);
+            setEarliestTime(convertToEpochTime(earliest));
+        }
+    }
+
+    async function loadAdditionalData(range) {
+        const needMoreData = range.from <= earliestTime;
+        if (needMoreData && !isLoading) {
+            setIsLoading(true);
+            const endTime = new Date(earliestTime * 1000);
+            endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
+            const moreData = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
+            setIsLoading(false);
+            const newData = [...moreData.data, ...data];
+            setData(newData);
+            if (config.show_support_resistance_levels) {
+                await loadSupportResistanceData(moreData.data)
+            }
+            if (moreData.data.length > 0) {
+                const earliest = moreData.data.reduce((min, p) => p.time < min ? p.time : min, moreData.data[0].time);
+                setEarliestTime(convertToEpochTime(earliest));
+            }
+        }
+    }
+
+    function resizeListener() {
+        if (chartRef.current) {
+            chartRef.current.resize(chartContainerRef.current.offsetWidth, chartContainerRef.current.offsetHeight);
+        }
+    }
+
+    const levelMarkerColor = (count) => {
+        if (count === 1) {
+            return "#FFF7F1"
+        } else if (count === 2) {
+            return "#FFE4C9"
+
+        } else if (count === 3) {
+            return "#FFBB64"
+
+        } else if (count >= 4) {
+            return "#FF6868"
+
+        }
     }
 
     useEffect(() => {
@@ -65,41 +135,24 @@ const Chart = ({config, isLoading, setIsLoading}) => {
                     textColor: 'white',
             })
             chartRef.current = chart
+            const priceLineSeries = chartRef.current.addLineSeries({
+                color: 'blue',
+                lineWidth: 2,
+            });
             seriesRef.current = chartRef.current.addCandlestickSeries({
                 color: '#2962FF',
-            });
+            })
             seriesRef.current.applyOptions({
-                wickUpColor: 'rgb(54, 116, 217)',
-                upColor: 'rgb(54, 116, 217)',
+                wickUpColor: '#0A9981',
+                upColor: '#0A9981',
                 wickDownColor: 'rgb(225, 50, 85)',
                 downColor: 'rgb(225, 50, 85)',
                 borderVisible: false,
             });
             window.addEventListener('resize', resizeListener);
         }
-
-        async function loadData() {
-            if (!config || !config.exchange_token || !config.interval_in_seconds) return;
-            setIsLoading(true);
-            const endTime = new Date();
-            endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
-            const response = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
-            setIsLoading(false);
-            setData(response.data);
-            if (response.data.length > 0) {
-                const earliest = response.data.reduce((min, p) => p.time < min ? p.time : min, response.data[0].time);
-                setEarliestTime(convertToEpochTime(earliest));
-            }
-        }
-
         loadData();
-
-        function resizeListener() {
-            if (chartRef.current) {
-                chartRef.current.resize(chartContainerRef.current.offsetWidth, chartContainerRef.current.offsetHeight);
-            }
-        }
-
+        setLastConfig(config)
         return () => {
             window.removeEventListener('resize', resizeListener);
             if (chartRef.current) {
@@ -119,7 +172,6 @@ const Chart = ({config, isLoading, setIsLoading}) => {
             low: d.low,
             close: d.close,
         })).sort((a, b) => a.time - b.time);
-
         const deduplicatedData = formattedData.reduce((acc, cur) => {
             const lastItem = acc[acc.length - 1];
             if (!lastItem || lastItem.time !== cur.time) {
@@ -127,9 +179,24 @@ const Chart = ({config, isLoading, setIsLoading}) => {
             }
             return acc;
         }, []);
-
         seriesRef.current.setData(deduplicatedData);
     }, [data]);
+
+    useEffect(() => {
+        if (!supportResistanceData.length) return;
+        supportResistanceData.map((level) => {
+            seriesRef.current.createPriceLine({
+                price: level.Start,
+                time: convertToEpochTime(level.StartTime),
+                endTime: convertToEpochTime(level.EndTime),
+                color: levelMarkerColor(level.Count),
+                lineWidth: 2,
+                lineStyle: 0,
+                axisLabelVisible: true,
+                titleBorderColor: '#2962FF',
+            });
+        })
+    }, [supportResistanceData])
 
     useEffect(() => {
         return () => {
@@ -150,23 +217,6 @@ const Chart = ({config, isLoading, setIsLoading}) => {
             }
         };
     }, [earliestTime, loadAdditionalData]);
-
-    async function loadAdditionalData(range) {
-        const needMoreData = range.from <= earliestTime;
-        if (needMoreData && !isLoading) {
-            setIsLoading(true);
-            const endTime = new Date(earliestTime * 1000);
-            endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
-            const moreData = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
-            setIsLoading(false);
-            const newData = [...moreData.data, ...data];
-            setData(newData);
-            if (moreData.data.length > 0) {
-                const earliest = moreData.data.reduce((min, p) => p.time < min ? p.time : min, moreData.data[0].time);
-                setEarliestTime(convertToEpochTime(earliest));
-            }
-        }
-    }
 
     return (
         <div ref={chartContainerRef} style={{
