@@ -8,32 +8,37 @@ import {Container, Dialog, DialogTitle, InputAdornment, TextField} from "@mui/ma
 import CloseIcon from '@mui/icons-material/Close';
 import Box from "@mui/material/Box";
 import SearchIcon from '@mui/icons-material/Search';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 const debounceTime = 300
 
-const getSuggestions = async (keyword) => {
-    if (keyword === '') return [];
+const getSuggestions = async (keyword, segment) => {
+    if (keyword === '' || segment === '') return [];
     return (await api.get('/symbol-suggestions', {
-        params: {keyword}
+        params: {keyword, segment}
     })).data;
 }
 
 const SymbolSuggestion = ({setInstrumentData, setShowSuggestions, showSuggestions}) => {
     const [suggestions, setSuggestions] = useState([{}]);
     const [searchSymbol, setSearchSymbol] = useState("");
-    const getSuggestionsDebounced = useCallback(_.debounce(async (keyword) => {
-        const response = await getSuggestions(keyword);
+    const [segment, setSegment] = useState("NSE");
+
+    const getSuggestionsDebounced = useCallback(_.debounce(async (keyword, segment) => {
+        const response = await getSuggestions(keyword, segment);
         if (response === undefined || response == null) return;
         setSuggestions(response.data);
     }, debounceTime), []);
 
     useEffect(() => {
-        if (searchSymbol) getSuggestionsDebounced(searchSymbol);
+        if (searchSymbol) getSuggestionsDebounced(searchSymbol, segment);
         return () => getSuggestionsDebounced.cancel();
-    }, [searchSymbol, getSuggestionsDebounced]);
+    }, [searchSymbol, segment, getSuggestionsDebounced]);
 
     const SuggestionsUI = () => {
-        if (suggestions === undefined || suggestions.length === 0) return <div>Loading...</div>
+        if (suggestions === undefined) return <div>Loading...</div>
+        if (suggestions === null) return <div>No results found</div>
         const uiElems = suggestions.map((suggestion) => {
             return (
                 <>
@@ -99,10 +104,28 @@ const SymbolSuggestion = ({setInstrumentData, setShowSuggestions, showSuggestion
                     justifyContent: "space-between",
                     alignItems: 'center',
                     width: '100%',
+                    height: 80,
                     p: 0,
                     m: 0,
                 }}>
-                    <DialogTitle sx={{m: 0, marginTop: 1, p: 0}}>Select Symbol</DialogTitle>
+                    <DialogTitle sx={{m: 0, p: 0}}>Select Symbol</DialogTitle>
+                    <ToggleButtonGroup
+                        sx={{m: 0, p: 0}}
+                        size="small"
+                        value={segment}
+                        exclusive
+                        onChange={(e, newSegment) => {
+                            setSegment(newSegment)
+                        }}
+                        aria-label="text alignment"
+                    >
+                        <ToggleButton value="NSE">
+                            Stock
+                        </ToggleButton>
+                        <ToggleButton value="INDICES">
+                            Index
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                     <CloseIcon onClick={() => setShowSuggestions(false)} style={{cursor: 'pointer'}}/>
                 </Box>
                 <Box sx={{
