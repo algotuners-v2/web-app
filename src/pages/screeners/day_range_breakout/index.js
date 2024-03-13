@@ -18,7 +18,7 @@ export default function DayRangeBreakout() {
     };
 
     useEffect(() => {
-        const ws = new WebSocket('ws://' + WS_BASE_URL + "/day-range-breakout");
+        const ws = new WebSocket('wss://' + WS_BASE_URL + "/day-range-breakout");
 
         ws.onopen = () => {
             console.log('WebSocket Connected');
