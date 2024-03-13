@@ -1,10 +1,10 @@
-import ChartScreen from "./pages/charting"
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppDrawer from "./components/drawer/app_drawer";
 import {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
+import DayRangeBreakout from "./pages/screeners/day_range_breakout";
 
 const darkTheme = createTheme({
     palette: {
@@ -48,7 +48,7 @@ export default function App() {
                     flexGrow: 1,
                     height: '100%'
                 }}>
-                    {selectedPageIdx === 0 && <ChartScreen/>}
+                    {selectedPageIdx === 0 && <DayRangeBreakout />}
                 </Box>
             </div>
         </ThemeProvider>

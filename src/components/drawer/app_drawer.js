@@ -13,9 +13,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ShowChart from '@mui/icons-material/ShowChart';
-import BusinessCenter from '@mui/icons-material/BusinessCenter';
-import Tune from '@mui/icons-material/Tune';
-import Settings from '@mui/icons-material/Settings';
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 
 const drawerWidth = 240;
 
@@ -66,7 +64,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function AppDrawer({selectedPageIdx, setSelectedPageIdx}) {
-    const theme = useTheme();
     const [open, setOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -123,12 +120,9 @@ export default function AppDrawer({selectedPageIdx, setSelectedPageIdx}) {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {getDrawerListItemUi('Charts', <ShowChart />, 0)}
-                    {getDrawerListItemUi('Portfolio', <BusinessCenter />, 1)}
-                    {getDrawerListItemUi('Backtesting', <Tune />, 2)}
+                    {getDrawerListItemUi('Screeners', <TroubleshootIcon />, 0)}
                 </List>
                 <Divider />
-                <List>{getDrawerListItemUi('Setting', <Settings />)}</List>
             </Drawer>
         </Box>
     );
