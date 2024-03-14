@@ -26,7 +26,7 @@ export default function DayRangeBreakout() {
 
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            setTickerData((prevData) => [data, ...prevData]);
+            setTickerData((prevData) => [data, ...prevData.slice(0, 99)]);
         };
 
         ws.onerror = (error) => {
