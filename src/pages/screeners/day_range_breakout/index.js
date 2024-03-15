@@ -48,7 +48,6 @@ export default function DayRangeBreakout() {
                         <TableCell>Time</TableCell>
                         <TableCell align="right">Symbol</TableCell>
                         <TableCell align="right">Price</TableCell>
-                        <TableCell align="right">Direction</TableCell>
                         <TableCell align="right">Day Change</TableCell>
                         <TableCell align="right">Kite V2 Charts</TableCell>
                     </TableRow>
@@ -63,8 +62,9 @@ export default function DayRangeBreakout() {
                                 {data.Time}
                             </TableCell>
                             <TableCell align="right">{data.Symbol}</TableCell>
-                            <TableCell align="right">{data.Price}</TableCell>
-                            <TableCell align="right">{data.Direction}</TableCell>
+                            <TableCell align="right" style={{ color: data.Direction === 'UP' ? 'green' : 'red' }}>
+                                {data.Price}
+                            </TableCell>
                             <TableCell align="right">{data.DayChangePercentage}</TableCell>
                             <TableCell align="right">
                                 <Button
