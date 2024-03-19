@@ -72,7 +72,7 @@ export default function Screener({setChartData, webSocketUrl}) {
                                 {data.Time}
                             </TableCell>
                             <TableCell sx={{ fontSize: '12px' }} align="right">{data.Symbol}</TableCell>
-                            <TableCell sx={{ fontSize: '12px' }} align="right" style={{ color: data.Direction === 'UP' ? 'green' : 'red' }}>
+                            <TableCell sx={{ fontSize: '12px' }} align="right" style={{ color: data.Direction === 'BUY' ? 'green' : 'red' }}>
                                 {data.Price}
                             </TableCell>
                             <TableCell sx={{ fontSize: '12px' }} align="right">{data.DayChangePercentage}</TableCell>
