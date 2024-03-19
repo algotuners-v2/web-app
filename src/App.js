@@ -4,7 +4,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import AppDrawer from "./components/drawer/app_drawer";
 import {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
-import DayRangeBreakout from "./pages/screeners/day_range_breakout";
+import Screener from "./components/screeners/screener";
+import Dashboard from "./pages/dashboard";
 
 const darkTheme = createTheme({
     palette: {
@@ -37,19 +38,7 @@ export default function App() {
                      display: 'flex',
                      flexDirection: 'row'
                  }}>
-                <Box sx={{
-                    width: 64,
-                    height: '100%',
-                    flexShrink: 0
-                }}>
-                    <AppDrawer setSelectedPageIdx={setSelectedPageIdx} selectedPageIdx={selectedPageIdx}/>
-                </Box>
-                <Box sx={{
-                    flexGrow: 1,
-                    height: '100%'
-                }}>
-                    {selectedPageIdx === 0 && <DayRangeBreakout />}
-                </Box>
+                <Dashboard />
             </div>
         </ThemeProvider>
     );

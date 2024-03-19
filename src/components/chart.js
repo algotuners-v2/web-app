@@ -1,12 +1,10 @@
 import {useEffect, useRef, useState} from "react";
 import {createChart} from "lightweight-charts";
-import {getSupportResistanceData, historicalData, supportResistanceData} from "../pages/charting/api";
+import {getSupportResistanceData, todayOhlcData} from "./charting/api";
 import {useTheme} from "@mui/material/styles";
 
 const convertToEpochTime = (timestamp) => {
-    const offset = 5.5 * 60 * 60 * 1000;
-    const utcTime = new Date(timestamp).getTime();
-    const istTime = utcTime + offset;
+    const istTime = new Date(timestamp).getTime();
     return istTime / 1000;
 }
 
@@ -40,16 +38,17 @@ const Chart = ({config, isLoading, setIsLoading}) => {
     }
 
     async function loadData() {
-        if (!config || !config.exchange_token || !config.interval_in_seconds) return;
+        if (!config || !config.exchange_token || !config.time_frame) return;
         setIsLoading(true);
         const endTime = new Date();
         endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
-        const response = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
+        const response = await todayOhlcData(config.exchange_token, config.time_frame)
+        // const response = await historicalData(config.exchange_token, config.time_frame, calcNumberOfDaysRequiredToLoadChartData(), endTime);
         setIsLoading(false);
         setData(response.data);
-        if (config.show_support_resistance_levels) {
-            await loadSupportResistanceData(response.data)
-        }
+        // if (config.show_support_resistance_levels) {
+        //     await loadSupportResistanceData(response.data)
+        // }
         if (response.data.length > 0) {
             const earliest = response.data.reduce((min, p) => p.time < min ? p.time : min, response.data[0].time);
             setEarliestTime(convertToEpochTime(earliest));
@@ -57,23 +56,23 @@ const Chart = ({config, isLoading, setIsLoading}) => {
     }
 
     async function loadAdditionalData(range) {
-        const needMoreData = range.from <= earliestTime;
-        if (needMoreData && !isLoading) {
-            setIsLoading(true);
-            const endTime = new Date(earliestTime * 1000);
-            endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
-            const moreData = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
-            setIsLoading(false);
-            const newData = [...moreData.data, ...data];
-            setData(newData);
-            if (config.show_support_resistance_levels) {
-                await loadSupportResistanceData(moreData.data)
-            }
-            if (moreData.data.length > 0) {
-                const earliest = moreData.data.reduce((min, p) => p.time < min ? p.time : min, moreData.data[0].time);
-                setEarliestTime(convertToEpochTime(earliest));
-            }
-        }
+        // const needMoreData = range.from <= earliestTime;
+        // if (needMoreData && !isLoading) {
+        //     setIsLoading(true);
+        //     const endTime = new Date(earliestTime * 1000);
+        //     endTime.setHours(9);endTime.setMinutes(15);endTime.setSeconds(0);
+        //     const moreData = await historicalData(config.exchange_token, config.interval_in_seconds, calcNumberOfDaysRequiredToLoadChartData(), endTime);
+        //     setIsLoading(false);
+        //     const newData = [...moreData.data, ...data];
+        //     setData(newData);
+        //     if (config.show_support_resistance_levels) {
+        //         await loadSupportResistanceData(moreData.data)
+        //     }
+        //     if (moreData.data.length > 0) {
+        //         const earliest = moreData.data.reduce((min, p) => p.time < min ? p.time : min, moreData.data[0].time);
+        //         setEarliestTime(convertToEpochTime(earliest));
+        //     }
+        // }
     }
 
     function resizeListener() {

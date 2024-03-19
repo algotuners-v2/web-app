@@ -1,6 +1,6 @@
-import Chart from "../../components/chart";
+import Chart from "../chart";
 import {useEffect, useState} from "react";
-import SymbolSuggestion from "../../components/popup/symbol_suggestion";
+import SymbolSuggestion from "../popup/symbol_suggestion";
 import {CircularProgress, Fab, Typography} from "@mui/material";
 import SettingsIcon from '@mui/icons-material/Settings';
 import {useTheme} from "@mui/material/styles";
@@ -8,18 +8,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import Configuration from "./configuration";
 import Box from "@mui/material/Box";
 
-const ChartScreen = () => {
+const ChartScreen = ({chartData}) => {
     const theme = useTheme()
     const [instrumentData, setInstrumentData] = useState(null)
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [openSettingDrawer, setOpenSettingDrawer] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [config, setConfig] = useState({
-        "interval_in_seconds": 300,
+        "time_frame": 'five_minutes',
         "exchange_token": "",
         "name": "",
         "trading_symbol": "",
-        "show_support_resistance_levels": false,
     })
 
     useEffect(() => {
@@ -34,6 +33,16 @@ const ChartScreen = () => {
         ))
     }, [instrumentData]);
 
+    useEffect(() => {
+        if (chartData != null) {
+            setInstrumentData({
+                "exchange_token": chartData['exchange_token'],
+                "name": chartData['name'],
+                "trading_symbol": chartData['trading_symbol'],
+            })
+        }
+    }, [chartData])
+
     return (
         <Box sx={{
             width: '100%',
@@ -47,9 +56,8 @@ const ChartScreen = () => {
                                                   showSuggestions={showSuggestions}
                                                   setShowSuggestions={setShowSuggestions}/>}
             <Box sx={{
-                backgroundColor: 'primary.dark',
                 position: 'fixed',
-                left: 70,
+                left: 5,
                 top: 5,
                 display: 'flex',
                 width: '220px',
@@ -60,7 +68,6 @@ const ChartScreen = () => {
                 justifyContent: 'center',
                 borderRadius: '20px',
                 borderWidth: '1px',
-                border: '1px solid',
                 borderColor: 'primary.main',
                 zIndex: 100,
                 alignItems: 'center',
@@ -73,10 +80,7 @@ const ChartScreen = () => {
                         height: 20,
                         m: 1,
                         borderRadius: '20px',
-                        backgroundColor: 'primary.dark',
-                        color: 'primary.main'
                     }}
-                    color ='primary.dark'
                     onClick={() => setShowSuggestions(true)}>
                     <SearchIcon fontSize='small' color='theme.palette.primary.contrastText'/>
                     Search
@@ -89,8 +93,6 @@ const ChartScreen = () => {
                         height: 20,
                         m: 1,
                         borderRadius: '20px',
-                        backgroundColor: 'primary.dark',
-                        color: 'primary.main'
                     }}
                     onClick={() => setOpenSettingDrawer(true)}>
                     <SettingsIcon fontSize='small' color='theme.palette.primary.contrastText'/>
