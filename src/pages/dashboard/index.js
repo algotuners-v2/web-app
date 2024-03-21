@@ -48,9 +48,8 @@ export default function Dashboard() {
                         alignItems: 'center',
                         borderBottom: "solid 0.5px #ccc",
                     }} className="custom-scrollbar">
-                        <p style={{padding: 2, margin: 2, fontWeight: 'bold', color: '#2268ff', fontSize: '16px'}}>Day
-                            range breakout</p>
-                        <Screener setChartData={setChartData} webSocketUrl={"/day-range-breakout"}/>
+                        <Screener setChartData={setChartData} webSocketUrl={"/day-range-breakout"} title={"Day\n" +
+                            "                            range breakout"}/>
                     </div>
                     <div style={{
                         display: "flex",
@@ -62,14 +61,7 @@ export default function Dashboard() {
                         alignItems: 'center',
                         borderTop: "solid 0.5px #ccc",
                     }} className="custom-scrollbar">
-                        <p style={{
-                            padding: 2,
-                            margin: 2,
-                            fontWeight: 'bold',
-                            color: '#2268ff',
-                            fontSize: '16px'
-                        }}>Candle reversal pattern</p>
-                        <Screener setChartData={setChartData} webSocketUrl={"/pattern/candle-reversal"}/>
+                        <Screener setChartData={setChartData} webSocketUrl={"/pattern/candle-reversal"} title={"Candle reversal pattern"}/>
                     </div>
                 </div>
             </div>
