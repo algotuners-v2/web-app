@@ -61,7 +61,21 @@ export default function Dashboard() {
                         alignItems: 'center',
                         borderTop: "solid 0.5px #ccc",
                     }} className="custom-scrollbar">
-                        <Screener setChartData={setChartData} webSocketUrl={"/pattern/candle-reversal"} title={"Candle reversal pattern"}/>
+                        <Screener setChartData={setChartData} webSocketUrl={"/pattern/candle-reversal"}
+                                  title={"Candle reversal pattern"}/>
+                    </div>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: 'column',
+                        flex: 1,
+                        fontSize: '10px',
+                        overflow: 'auto',
+                        justifyContent: 'start',
+                        alignItems: 'center',
+                        borderTop: "solid 0.5px #ccc",
+                    }} className="custom-scrollbar">
+                        <Screener setChartData={setChartData} webSocketUrl={"/velocity-stocks"}
+                                  title={"Stocks Velocity"}/>
                     </div>
                 </div>
             </div>
