@@ -89,6 +89,7 @@ export default function Screener({setChartData, webSocketUrl, title}) {
                             <TableCell align="right" sx={{fontSize: '12px'}}>Symbol</TableCell>
                             <TableCell align="right" sx={{fontSize: '12px'}}>Price</TableCell>
                             <TableCell align="right" sx={{fontSize: '12px'}}>Day Change</TableCell>
+                            <TableCell align="right" sx={{fontSize: '12px'}}>Sector</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -107,6 +108,7 @@ export default function Screener({setChartData, webSocketUrl, title}) {
                                     {data.Price}
                                 </TableCell>
                                 <TableCell sx={{fontSize: '12px'}} align="right">{data.DayChangePercentage}</TableCell>
+                                <TableCell sx={{fontSize: '12px'}} align="right">{data.Sector}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
