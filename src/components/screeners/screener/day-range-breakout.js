@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {WS_BASE_URL} from "../../../api";
 
+
 const tableContainerStyles = {
     marginRight: '5px',
     '&::-webkit-scrollbar': {
