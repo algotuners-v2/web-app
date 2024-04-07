@@ -1,84 +1,77 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Screener from "../../components/screeners/screener";
+import Grid from '@mui/material/Grid';
+import DayRangeBreakoutScreener from "../../components/screeners/screener/day-range-breakout";
+import CandleReversalScreener from "../../components/screeners/screener/candle-reversal";
+
+const scrollBarStyle = {
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+        height: '2px',
+        width: '2px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+        backgroundColor: 'darkgrey',
+    }
+};
+
 
 export default function Dashboard() {
-    const [chartData, setChartData] = useState([]);
-
     return (
-        <>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                width: '100vw',
-            }}>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: "5px",
-                    width: '95vw',
-                    border: "solid 1px #ccc",
-                    borderTopLeftRadius: '5px',
-                    borderBottomLeftRadius: '5px',
-                    height: '100vh',
-                }}>
-                    <style>
-                        {`
-                    .custom-scrollbar::-webkit-scrollbar {
-                        width: 5px !important;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-thumb {
-                        background-color: darkslategrey !important;
-                        border-radius: 10px !important;
-                    }
-                    .custom-scrollbar::-webkit-scrollbar-track {
-                        background: #ccc !important;
-                    }
-                `}
-                    </style>
+        <div style={{
+            display: 'flex',
+            flexDirection: "row",
+            justifyContent: 'center',
+            padding: "5px",
+            width: '100vw',
+            height: '100vh',
+            ...scrollBarStyle
+        }}>
+            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 1, md: 1 }}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
                     <div style={{
                         display: "flex",
                         flexDirection: 'column',
-                        flex: 1,
                         fontSize: '10px',
                         justifyContent: 'start',
-                        overflow: 'auto',
                         alignItems: 'center',
-                        borderBottom: "solid 0.5px #ccc",
-                    }} className="custom-scrollbar">
-                        <Screener setChartData={setChartData} webSocketUrl={"/day-range-breakout"} title={"Day\n" +
+                        padding: '5px',
+                        minWidth: '600px',
+                        height: '450px'
+                    }}>
+                        <DayRangeBreakoutScreener webSocketUrl={"/day-range-breakout"} title={"Day\n" +
                             "                            range breakout"}/>
                     </div>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
                     <div style={{
                         display: "flex",
                         flexDirection: 'column',
-                        flex: 1,
                         fontSize: '10px',
-                        overflow: 'auto',
                         justifyContent: 'start',
                         alignItems: 'center',
-                        borderTop: "solid 0.5px #ccc",
-                    }} className="custom-scrollbar">
-                        <Screener setChartData={setChartData} webSocketUrl={"/pattern/candle-reversal"}
-                                  title={"Candle reversal pattern"}/>
+                        padding: '5px',
+                        minWidth: '600px',
+                        height: '450px'
+                    }}>
+                        <CandleReversalScreener webSocketUrl={"/pattern/candle-reversal"} title={"Candle reversal pattern"}/>
                     </div>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
                     <div style={{
                         display: "flex",
                         flexDirection: 'column',
-                        flex: 1,
                         fontSize: '10px',
-                        overflow: 'auto',
                         justifyContent: 'start',
                         alignItems: 'center',
-                        borderTop: "solid 0.5px #ccc",
-                    }} className="custom-scrollbar">
-                        <Screener setChartData={setChartData} webSocketUrl={"/velocity-stocks"}
-                                  title={"Stocks Velocity"}/>
+                        padding: '5px',
+                        minWidth: '600px',
+                        height: '450px'
+                    }}>
+                        <CandleReversalScreener webSocketUrl={"/velocity-stocks"} title={"Stocks Velocity"}/>
                     </div>
-                </div>
-            </div>
-        </>
+                </Grid>
+            </Grid>
+        </div>
     );
 }

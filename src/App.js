@@ -1,10 +1,5 @@
-
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import AppDrawer from "./components/drawer/app_drawer";
-import {useEffect, useState} from "react";
-import Box from "@mui/material/Box";
-import Screener from "./components/screeners/screener";
 import Dashboard from "./pages/dashboard";
 
 const darkTheme = createTheme({
@@ -26,8 +21,6 @@ const darkTheme = createTheme({
 });
 
 export default function App() {
-    const [selectedPageIdx, setSelectedPageIdx] = useState(0)
-
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
