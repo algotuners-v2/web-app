@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {WS_BASE_URL} from "../../../api";
+import {pingWsRequest, pongWsResponse} from "../../../api/ws_helper";
 
 
 const tableContainerStyles = {
@@ -21,7 +22,7 @@ const tableContainerStyles = {
 };
 
 
-export default function DayRangeBreakoutScreener({webSocketUrl, title}) {
+export default function DayRangeBreakoutScreener({connectionRequestMessage, title}) {
     const [tickerData, setTickerData] = useState([]);
     const [wsStatus, setWsStatus] = useState('🟥')
 
@@ -65,19 +66,20 @@ export default function DayRangeBreakoutScreener({webSocketUrl, title}) {
 
 
     useEffect(() => {
-        const ws = new WebSocket('wss://' + WS_BASE_URL + webSocketUrl);
+        const ws = new WebSocket('wss://' + WS_BASE_URL);
         ws.onopen = () => {
-            console.log('WebSocket Connected' + webSocketUrl);
+            console.log('WebSocket Connected' + JSON.stringify(connectionRequestMessage));
             setWsStatus('🟢')
+            ws.send(JSON.stringify(connectionRequestMessage))
             ws.pingInterval = setInterval(() => {
-                ws.send('ping');
+                ws.send(JSON.stringify(pingWsRequest));
             }, 5000);
         };
         ws.onmessage = (event) => {
-            if (event.data === 'pong') {
+            const data = JSON.parse(event.data);
+            if (data === pongWsResponse) {
                 return;
             }
-            const data = JSON.parse(event.data);
             setTickerData((prevData) => [data, ...prevData.slice(0, 40)]);
         };
         ws.onerror = (error) => {
@@ -85,6 +87,7 @@ export default function DayRangeBreakoutScreener({webSocketUrl, title}) {
             console.log('WebSocket Error: ', error);
         };
         ws.onclose = () => {
+            clearInterval(ws.pingInterval);
             setWsStatus('🟥')
             console.log('WebSocket Disconnected');
         };
@@ -147,11 +150,17 @@ export default function DayRangeBreakoutScreener({webSocketUrl, title}) {
             border: '1px solid #fff',
             borderRadius: '5px'
         }}>
-            <p style={{padding: 2, margin: 2, fontWeight: 'bold', color: '#2268ff', fontSize: '16px'}}>
-                {title}: {wsStatus}
-            </p>
-            <div style={{display: 'flex', flexDirection: 'row', width: '100%',
-                height: '94%',}}>
+            <div style={{
+                height: '6%',
+            }}>
+                <p style={{padding: 2, margin: 2, fontWeight: 'bold', color: '#2268ff', fontSize: '16px'}}>
+                    {title}: {wsStatus}
+                </p>
+            </div>
+            <div style={{
+                display: 'flex', flexDirection: 'row', width: '100%',
+                height: '94%',
+            }}>
                 {renderTable(buyData, 'BUY')}
                 {renderTable(sellData, 'SELL')}
             </div>

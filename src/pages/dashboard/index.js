@@ -1,8 +1,15 @@
-import React from 'react';
-import Screener from "../../components/screeners/screener";
+import React, {useEffect, useState} from 'react';
 import Grid from '@mui/material/Grid';
 import DayRangeBreakoutScreener from "../../components/screeners/screener/day-range-breakout";
 import CandleReversalScreener from "../../components/screeners/screener/candle-reversal";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import {WS_BASE_URL} from "../../api";
+import {
+    candleReversalScreenerWsRequest15min, candleReversalScreenerWsRequest1Day,
+    candleReversalScreenerWsRequest5min, candleReversalScreenerWsRequest60min,
+    dayRangeBreakoutScreenerWsRequest, velocityStocksScreenerWsRequest
+} from "../../api/ws_helper";
 
 const scrollBarStyle = {
     overflow: 'auto',
@@ -15,19 +22,29 @@ const scrollBarStyle = {
     }
 };
 
+const MemoizedDayRangeBreakoutScreener = React.memo(DayRangeBreakoutScreener);
+const MemoizedCandleReversalScreener = React.memo(CandleReversalScreener);
+
+
 
 export default function Dashboard() {
+    const [tabValue, setTabValue] = React.useState(0);
+
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
     return (
         <div style={{
             display: 'flex',
-            flexDirection: "row",
-            justifyContent: 'center',
+            flexDirection: "column",
+            alignItems: 'center',
             padding: "5px",
             width: '100vw',
             height: '100vh',
             ...scrollBarStyle
         }}>
-            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 1, md: 1 }}>
+            <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 1, md: 1}}>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
                     <div style={{
                         display: "flex",
@@ -39,7 +56,7 @@ export default function Dashboard() {
                         minWidth: '600px',
                         height: '450px'
                     }}>
-                        <DayRangeBreakoutScreener webSocketUrl={"/day-range-breakout"} title={"Day\n" +
+                        <MemoizedDayRangeBreakoutScreener connectionRequestMessage={dayRangeBreakoutScreenerWsRequest} title={"Day\n" +
                             "                            range breakout"}/>
                     </div>
                 </Grid>
@@ -54,7 +71,8 @@ export default function Dashboard() {
                         minWidth: '600px',
                         height: '450px'
                     }}>
-                        <CandleReversalScreener webSocketUrl={"/pattern/candle-reversal"} title={"Candle reversal pattern"}/>
+                        <MemoizedCandleReversalScreener connectionRequestMessage={candleReversalScreenerWsRequest15min}
+                                                        title={"Candle reversal pattern [15m]"}/>
                     </div>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
@@ -68,7 +86,22 @@ export default function Dashboard() {
                         minWidth: '600px',
                         height: '450px'
                     }}>
-                        <CandleReversalScreener webSocketUrl={"/velocity-stocks"} title={"Stocks Velocity"}/>
+                        <MemoizedCandleReversalScreener connectionRequestMessage={candleReversalScreenerWsRequest5min}
+                                                        title={"Candle reversal pattern [5m]"}/>
+                    </div>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: 'column',
+                        fontSize: '10px',
+                        justifyContent: 'start',
+                        alignItems: 'center',
+                        padding: '5px',
+                        minWidth: '600px',
+                        height: '450px'
+                    }}>
+                        <MemoizedCandleReversalScreener connectionRequestMessage={velocityStocksScreenerWsRequest} title={"Stocks Velocity [tick]"}/>
                     </div>
                 </Grid>
             </Grid>

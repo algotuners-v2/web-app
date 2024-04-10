@@ -1,6 +1,8 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import Dashboard from "./pages/dashboard";
+import Testing from "./pages/testing";
 
 const darkTheme = createTheme({
     palette: {
@@ -22,17 +24,36 @@ const darkTheme = createTheme({
 
 export default function App() {
     return (
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
-            <div className="App"
-                 style={{
-                     height: "100vh",
-                     width: "100vw",
-                     display: 'flex',
-                     flexDirection: 'row'
-                 }}>
-                <Dashboard />
-            </div>
-        </ThemeProvider>
+        <Router>
+            <ThemeProvider theme={darkTheme}>
+                <CssBaseline />
+                <div
+                    className="App"
+                    style={{
+                        height: '100vh',
+                        width: '100vw',
+                        display: 'flex',
+                        flexDirection: 'row',
+                    }}
+                >
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/ms" element={<Testing />} />
+                    </Routes>
+                </div>
+            </ThemeProvider>
+        </Router>
+        // <ThemeProvider theme={darkTheme}>
+        //     <CssBaseline />
+        //     <div className="App"
+        //          style={{
+        //              height: "100vh",
+        //              width: "100vw",
+        //              display: 'flex',
+        //              flexDirection: 'row'
+        //          }}>
+        //         <Dashboard />
+        //     </div>
+        // </ThemeProvider>
     );
 }
