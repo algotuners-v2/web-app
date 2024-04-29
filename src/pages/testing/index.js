@@ -57,6 +57,7 @@ export default function Testing() {
             { tabValue === 0 && <div style={{
                 display: "flex",
                 flexDirection: "row",
+                width: '100vw',
                 flex: 1,
             }}>
                 <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 1, md: 1}}>
@@ -124,6 +125,7 @@ export default function Testing() {
             { tabValue === 1 && <div style={{
                 display: "flex",
                 flexDirection: "row",
+                width: '100vw',
                 flex: 1,
             }}>
                 <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 1, md: 1}}>
