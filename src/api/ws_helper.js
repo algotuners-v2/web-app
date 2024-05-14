@@ -55,6 +55,15 @@ export const dayRangeBreakoutScreenerWsRequest = {
     }
 }
 
+export const marketInfoScreenerWsRequest = {
+    "messageType": "subscribeScreeners",
+    "message": {
+        "screenerConfigMap": {
+            "market_stats_info_screener": ""
+        }
+    }
+}
+
 export const velocityStocksScreenerWsRequest = {
     "messageType": "subscribeScreeners",
     "message": {
