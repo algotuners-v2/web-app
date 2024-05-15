@@ -8,8 +8,9 @@ import {WS_BASE_URL} from "../../api";
 import {
     candleReversalScreenerWsRequest15min, candleReversalScreenerWsRequest1Day,
     candleReversalScreenerWsRequest5min, candleReversalScreenerWsRequest60min,
-    dayRangeBreakoutScreenerWsRequest, velocityStocksScreenerWsRequest
+    dayRangeBreakoutScreenerWsRequest, marketInfoScreenerWsRequest, velocityStocksScreenerWsRequest
 } from "../../api/ws_helper";
+import MarketInfoScreener from "../../components/screeners/screener/market-info-screener";
 
 const scrollBarStyle = {
     overflow: 'auto',
@@ -44,6 +45,7 @@ export default function Testing() {
             height: '100vh',
             ...scrollBarStyle
         }}>
+            <MarketInfoScreener connectionRequestMessage={marketInfoScreenerWsRequest} title={"market Info screener"}/>
             <div style={{
                 width: '100%',
                 maxWidth: '600px',
