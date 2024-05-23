@@ -66,7 +66,7 @@ export default function DayRangeBreakoutScreener({connectionRequestMessage, titl
 
 
     useEffect(() => {
-        const ws = new WebSocket('wss://' + WS_BASE_URL);
+        const ws = new WebSocket('ws://' + WS_BASE_URL);
         ws.onopen = () => {
             console.log('WebSocket Connected' + JSON.stringify(connectionRequestMessage));
             setWsStatus('🟢')
