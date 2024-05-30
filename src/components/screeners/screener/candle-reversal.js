@@ -64,37 +64,37 @@ export default function VelocityScreener({connectionRequestMessage, title}) {
     // }, []);
 
 
-    useEffect(() => {
-        const ws = new WebSocket('wss://' + WS_BASE_URL);
-        ws.onopen = () => {
-            console.log('WebSocket Connected' + JSON.stringify(connectionRequestMessage));
-            setWsStatus('🟢')
-            ws.send(JSON.stringify(connectionRequestMessage))
-            ws.pingInterval = setInterval(() => {
-                ws.send(JSON.stringify(pingWsRequest));
-            }, 5000);
-        };
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data === pongWsResponse) {
-                return;
-            }
-            setTickerData((prevData) => [data, ...prevData.slice(0, 40)]);
-        };
-        ws.onerror = (error) => {
-            setWsStatus('🟥')
-            console.log('WebSocket Error: ', error);
-        };
-        ws.onclose = () => {
-            clearInterval(ws.pingInterval);
-            setWsStatus('🟥')
-            console.log('WebSocket Disconnected');
-        };
-        return () => {
-            setWsStatus('🟥')
-            ws.close();
-        }
-    }, []);
+    // useEffect(() => {
+    //     const ws = new WebSocket('wss://' + WS_BASE_URL);
+    //     ws.onopen = () => {
+    //         console.log('WebSocket Connected' + JSON.stringify(connectionRequestMessage));
+    //         setWsStatus('🟢')
+    //         ws.send(JSON.stringify(connectionRequestMessage))
+    //         ws.pingInterval = setInterval(() => {
+    //             ws.send(JSON.stringify(pingWsRequest));
+    //         }, 5000);
+    //     };
+    //     ws.onmessage = (event) => {
+    //         const data = JSON.parse(event.data);
+    //         if (data === pongWsResponse) {
+    //             return;
+    //         }
+    //         setTickerData((prevData) => [data, ...prevData.slice(0, 40)]);
+    //     };
+    //     ws.onerror = (error) => {
+    //         setWsStatus('🟥')
+    //         console.log('WebSocket Error: ', error);
+    //     };
+    //     ws.onclose = () => {
+    //         clearInterval(ws.pingInterval);
+    //         setWsStatus('🟥')
+    //         console.log('WebSocket Disconnected');
+    //     };
+    //     return () => {
+    //         setWsStatus('🟥')
+    //         ws.close();
+    //     }
+    // }, []);
 
     const buyData = tickerData.filter((data) => data.Direction === 'BUY');
     const sellData = tickerData.filter((data) => data.Direction === 'SELL');
