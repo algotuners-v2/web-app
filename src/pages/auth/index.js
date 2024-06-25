@@ -38,7 +38,7 @@ const LoginAuth = () => {
     return (
         <div className="auth-container">
             <div className="login-box">
-                <h2>    Login</h2>
+                <h2>Login(NEED VPN TO LOGIN)</h2>
                 {error && <p className="error">{error}</p>}
                 <input
                     type="text"
