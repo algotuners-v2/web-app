@@ -2,15 +2,14 @@ import React, {useEffect, useState} from 'react';
 import Grid from '@mui/material/Grid';
 import DayRangeBreakoutScreener from "../../components/screeners/screener/day-range-breakout";
 import CandleReversalScreener from "../../components/screeners/screener/candle-reversal";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import {WS_BASE_URL} from "../../api";
 import {
     candleReversalScreenerWsRequest15min, candleReversalScreenerWsRequest1Day,
     candleReversalScreenerWsRequest5min, candleReversalScreenerWsRequest60min,
     dayRangeBreakoutScreenerWsRequest, marketInfoScreenerWsRequest, velocityStocksScreenerWsRequest
 } from "../../api/ws_helper";
 import MarketInfoScreener from "../../components/screeners/screener/market-info-screener";
+import {useAuth} from "../auth/auth_context";
+import {useNavigate} from "react-router-dom";
 
 const scrollBarStyle = {
     overflow: 'auto',
@@ -29,11 +28,21 @@ const MemoizedCandleReversalScreener = React.memo(CandleReversalScreener);
 
 
 export default function Dashboard() {
-    const [tabValue, setTabValue] = React.useState(0);
+    const { authToken, username, logout } = useAuth();
+    const navigate = useNavigate();
 
-    const handleTabChange = (event, newValue) => {
-        setTabValue(newValue);
-    };
+    useEffect(() => {
+        if(authToken !== "") {
+            return
+        } else {
+            handleLogout()
+        }
+    }, [])
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login')
+    }
 
     return (
         <div style={{
@@ -45,7 +54,10 @@ export default function Dashboard() {
             height: '100vh',
             ...scrollBarStyle
         }}>
-            <MarketInfoScreener connectionRequestMessage={marketInfoScreenerWsRequest} title={"market Info screener"}/>
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%", padding: "5px"}}>
+                <MarketInfoScreener connectionRequestMessage={marketInfoScreenerWsRequest} title={"market Info screener"}/>
+                <button onClick={handleLogout}>Logout</button>
+            </div>
             <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 1, md: 1}}>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
                     <div style={{

@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {WS_BASE_URL} from "../../../api";
 import {pingWsRequest, pongWsResponse} from "../../../api/ws_helper";
+import {useAuth} from "../../../pages/auth/auth_context";
 
 
 const tableContainerStyles = {
@@ -25,6 +26,8 @@ const tableContainerStyles = {
 export default function DayRangeBreakoutScreener({connectionRequestMessage, title}) {
     const [tickerData, setTickerData] = useState([]);
     const [wsStatus, setWsStatus] = useState('🟥')
+    const { authToken } = useAuth();
+
 
     const handleOpenKiteChart = (chartLink) => {
         window.open(chartLink, '_blank');
@@ -66,7 +69,7 @@ export default function DayRangeBreakoutScreener({connectionRequestMessage, titl
 
 
     useEffect(() => {
-        const ws = new WebSocket('wss://' + WS_BASE_URL);
+        const ws = new WebSocket(`wss://${WS_BASE_URL}?token=${authToken}`);
         ws.onopen = () => {
             console.log('WebSocket Connected' + JSON.stringify(connectionRequestMessage));
             setWsStatus('🟢')

@@ -2,10 +2,13 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import {WS_BASE_URL} from "../../../api";
 import {pingWsRequest, pongWsResponse} from "../../../api/ws_helper";
+import {useAuth} from "../../../pages/auth/auth_context";
 
 
 export default function MarketInfoScreener({connectionRequestMessage, title}) {
     const [marketInfo, setMarketInfo] = useState([]);
+    const { authToken } = useAuth();
+
 
     function generateMockData() {
         // Mock symbols and sectors for the data
@@ -43,7 +46,7 @@ export default function MarketInfoScreener({connectionRequestMessage, title}) {
 
 
     useEffect(() => {
-        const ws = new WebSocket('wss://' + WS_BASE_URL);
+        const ws = new WebSocket(`wss://${WS_BASE_URL}?token=${authToken}`);
         ws.onopen = () => {
             console.log('WebSocket Connected' + JSON.stringify(connectionRequestMessage));
             ws.send(JSON.stringify(connectionRequestMessage))

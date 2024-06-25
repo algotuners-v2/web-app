@@ -1,8 +1,10 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {BrowserRouter as Router, Navigate, Route, Routes, useNavigate} from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import Dashboard from "./pages/dashboard";
 import Testing from "./pages/testing";
+import LoginAuth from "./pages/auth";
+import {AuthProvider} from "./pages/auth/auth_context";
 
 const darkTheme = createTheme({
     palette: {
@@ -22,7 +24,15 @@ const darkTheme = createTheme({
     },
 });
 
-export default function App() {
+function AuthApp() {
+    return (
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
+    );
+}
+
+function AppContent() {
     return (
         <Router>
             <ThemeProvider theme={darkTheme}>
@@ -37,23 +47,16 @@ export default function App() {
                     }}
                 >
                     <Routes>
-                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/" element={<Navigate to="/login" />} />
+                        <Route path="/login" element={<LoginAuth />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/ms" element={<Testing />} />
                     </Routes>
                 </div>
             </ThemeProvider>
         </Router>
-        // <ThemeProvider theme={darkTheme}>
-        //     <CssBaseline />
-        //     <div className="App"
-        //          style={{
-        //              height: "100vh",
-        //              width: "100vw",
-        //              display: 'flex',
-        //              flexDirection: 'row'
-        //          }}>
-        //         <Dashboard />
-        //     </div>
-        // </ThemeProvider>
     );
 }
+
+
+export default AuthApp
