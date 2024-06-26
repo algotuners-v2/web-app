@@ -32,7 +32,7 @@ const LoginAuth = () => {
         if (authToken && authUserName) {
             navigate('/dashboard');
         }
-    }, [authToken, authUserName, navigate]);
+    }, []);
 
     return (
         <div className="auth-container">
