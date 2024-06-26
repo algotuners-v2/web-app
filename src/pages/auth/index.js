@@ -29,10 +29,11 @@ const LoginAuth = () => {
     };
 
     useEffect(() => {
-        if (authToken && authUserName) {
-            navigate('/dashboard');
+        if(authToken === null || authUserName === null) {
+            return
         }
-    }, []);
+        navigate('/dashboard')
+    }, [])
 
     return (
         <div className="auth-container">
